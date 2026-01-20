@@ -122,7 +122,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           
       - name: Upload ZAP Report
-      uses: actions/upload-artifact@v4
-      with:
-        name: zap-scan-report 
-        path: report_html.html
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-scan-report 
+          path: report_html.html
