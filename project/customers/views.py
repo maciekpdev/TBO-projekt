@@ -19,35 +19,29 @@ def list_customers():
 # Route to fetch customers in JSON format
 @customers.route('/json', methods=['GET'])
 def list_customers_json():
-    
-    from sqlalchemy import text
-    search_name = request.args.get('name', '')
+    # Fetch all customers from the database and convert to JSON
+    customers = Customer.query.all()
+    customer_list = [{'name': customer.name, 'city': customer.city, 'age': customer.age} for customer in customers]
+    return jsonify(customers=customer_list)
+
+
+
+@customers.route('/details/<int:customer_id>', methods=['GET'])
+def get_customer_details(customer_id):
     
     try:
-        if search_name:
-            query = f"SELECT id, name, city, age FROM customers WHERE name LIKE '%{search_name}%'"
-        else:
-            query = "SELECT id, name, city, age FROM customers"
-        
-        result = db.session.execute(text(query))
-        customers = result.fetchall()
-        
-        customer_list = []
-        for customer in customers:
-            customer_list.append({
-                'id': customer[0],
-                'name': customer[1],
-                'city': customer[2],
-                'age': customer[3]
-            })
-        
-        return jsonify(customers=customer_list)
-    except Exception as e:
+        customer = Customer.query.get(customer_id)
+        if not customer:
+            raise ValueError(f"Customer with ID {customer_id} not found")
         return jsonify({
-            'error': 'Database query failed',
-            'details': str(e), 
-            'customers': []
-        }), 500
+            'id': customer.id,
+            'name': customer.name,
+            'city': customer.city,
+            'age': customer.age
+        })
+    except Exception as e:
+        import traceback
+        return f"Error: {str(e)}\n\nStack trace:\n{traceback.format_exc()}", 500
 
 
 # Route to create a new customer
