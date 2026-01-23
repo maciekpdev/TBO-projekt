@@ -19,10 +19,35 @@ def list_customers():
 # Route to fetch customers in JSON format
 @customers.route('/json', methods=['GET'])
 def list_customers_json():
-    # Fetch all customers from the database and convert to JSON
-    customers = Customer.query.all()
-    customer_list = [{'name': customer.name, 'city': customer.city, 'age': customer.age} for customer in customers]
-    return jsonify(customers=customer_list)
+    
+    from sqlalchemy import text
+    search_name = request.args.get('name', '')
+    
+    try:
+        if search_name:
+            query = f"SELECT id, name, city, age FROM customers WHERE name LIKE '%{search_name}%'"
+        else:
+            query = "SELECT id, name, city, age FROM customers"
+        
+        result = db.session.execute(text(query))
+        customers = result.fetchall()
+        
+        customer_list = []
+        for customer in customers:
+            customer_list.append({
+                'id': customer[0],
+                'name': customer[1],
+                'city': customer[2],
+                'age': customer[3]
+            })
+        
+        return jsonify(customers=customer_list)
+    except Exception as e:
+        return jsonify({
+            'error': 'Database query failed',
+            'details': str(e), 
+            'customers': []
+        }), 500
 
 
 # Route to create a new customer

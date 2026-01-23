@@ -1,4 +1,4 @@
-from flask import render_template, render_template_string, Blueprint, request, redirect, url_for, jsonify
+from flask import render_template, Blueprint, request, redirect, url_for, jsonify
 from project import db
 from project.books.models import Book
 from project.books.forms import CreateBook
@@ -125,36 +125,17 @@ def delete_book(book_id):
 # Route to get book details based on book name
 @books.route('/details/<string:book_name>', methods=['GET'])
 def get_book_details(book_name):
-        # Find the book by its name
-        book = Book.query.filter_by(name=book_name).first()
+    # Find the book by its name
+    book = Book.query.filter_by(name=book_name).first()
 
-        if book:
-            book_data = {
-                'name': book.name,
-                'author': book.author,
-                'year_published': book.year_published,
-                'book_type': book.book_type
-            }
-            return jsonify(book=book_data)
-        else:
-            print('Book not found')
-            # We wanted to show some nice error page with book name, what could possibly go wrong?
-            error_html = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Book Not Found</title>
-                <style>
-                    body {{ font-family: Arial; margin: 40px; }}
-                    .error {{ color: #d32f2f; }}
-                </style>
-            </head>
-            <body>
-                <h1 class="error">Book Not Found</h1>
-                <p>The book <strong>{book_name}</strong> does not exist in our database.</p>
-                <p>You searched for: <em>{book_name}</em></p>
-                <a href="/books">← Back to Books</a>
-            </body>
-            </html>
-            """
-            return render_template_string(error_html), 404
+    if book:
+        book_data = {
+            'name': book.name,
+            'author': book.author,
+            'year_published': book.year_published,
+            'book_type': book.book_type
+        }
+        return jsonify(book=book_data)
+    else:
+        print('Book not found')
+        return jsonify({'error': f'Book "{book_name}" not found'}), 404
