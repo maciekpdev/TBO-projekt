@@ -129,6 +129,7 @@ jobs:
             target: 'http://localhost:5000'
             token: ${{ secrets.GITHUB_TOKEN }}
             fail_action: false
+            upload_artifact: false
   
         - name: Upload ZAP Report
           if: always()

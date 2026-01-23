@@ -1,4 +1,4 @@
-from flask import render_template, render_template_string, Blueprint, request, redirect, url_for, jsonify
+from flask import render_template, render_template_string, Blueprint, request, redirect, url_for, jsonify, Markup
 from project import db
 from project.books.models import Book
 from project.books.forms import CreateBook
@@ -138,23 +138,28 @@ def get_book_details(book_name):
             return jsonify(book=book_data)
         else:
             print('Book not found')
+            # VULNERABLE: Server-Side Template Injection (SSTI)
             # We wanted to show some nice error page with book name, what could possibly go wrong?
-            error_html = """
+            # Mistake: User input directly inserted into template string allows Jinja2 code execution
+            error_html = f"""
             <!DOCTYPE html>
             <html>
             <head>
                 <title>Book Not Found</title>
                 <style>
-                    body { font-family: Arial; margin: 40px; }
-                    .error { color: #d32f2f; }
+                    body {{ font-family: Arial; margin: 40px; }}
+                    .error {{ color: #d32f2f; }}
                 </style>
             </head>
             <body>
                 <h1 class="error">Book Not Found</h1>
-                <p>The book <strong>BOOK_NAME_PLACEHOLDER</strong> does not exist in our database.</p>
-                <p>You searched for: <em>BOOK_NAME_PLACEHOLDER</em></p>
+                <p>The book <strong>{book_name}</strong> does not exist in our database.</p>
+                <p>You searched for: <em>{book_name}</em></p>
                 <a href="/books">← Back to Books</a>
             </body>
             </html>
-            """.replace('BOOK_NAME_PLACEHOLDER', book_name)
-            return render_template_string(error_html), 404
+            """
+            # VULNERABLE: book_name is interpolated by f-string into template string
+            # If user enters {{7*7}}, f-string creates {{7*7}} in string, then Jinja2 executes it
+            # Using Markup to ensure Jinja2 processes the interpolated content as template code
+            return render_template_string(Markup(error_html)), 404

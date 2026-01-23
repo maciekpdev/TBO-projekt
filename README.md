@@ -2,7 +2,26 @@
 
 ## SSTI
 
-Wprowadzono podatność SSTI polegającą na
+Stworzony zestał dodatkowy ekran dla nieznalezionych książek. Wprowadzono podatność SSTI (Server-Side Template Injection) polegającą na bezpośrednim wstawieniu danych użytkownika (`book_name`) do template stringa, który jest następnie renderowany przez `render_template_string()`. W funkcji `get_book_details()` w pliku `project/books/views.py`.
+
+**Przykładowe exploity:**
+- `{{7*7}}` - wykonuje mnożenie, zwraca `49`
+- `{{config.SECRET_KEY}}` - wyciąga klucz sekretny aplikacji
+- `{{''.__class__.__mro__[1].__subclasses__()}}` - lista dostępnych klas
+
+### Screeny podatności:
+
+#### 1. Normalne użycie ekranu
+![Normalne użycie](img/normalne.png)
+*Normalne wyświetlenie strony błędu dla nieistniejącej książki*
+
+#### 2. Wstrzyknięcie kodu
+![Wstrzyknięcie mnożenia](img/mnozenie.png)
+*Wstrzyknięcie mnożenia w parametrze URL powoduje wykonanie kodu Jinja2 i wyświetlenie wyniku zamiast tekstu*
+
+#### 3. Wstrzyknięcie wydobycia klucza ({{config.SECRET_KEY}})
+![Wstrzyknięcie klucza](img/supersecret.png)
+*Wstrzyknięcie `{{config.SECRET_KEY}}` pozwala na wyciągnięcie wrażliwego klucza sekretnego aplikacji Flask* 
 
 To run app
 
