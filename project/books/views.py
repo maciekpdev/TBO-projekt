@@ -151,10 +151,10 @@ def get_book_details(book_name):
             </head>
             <body>
                 <h1 class="error">Book Not Found</h1>
-                <p>The book <strong>""" + book_name + """</strong> does not exist in our database.</p>
-                <p>You searched for: <em>""" + book_name + """</em></p>
+                <p>The book <strong>BOOK_NAME_PLACEHOLDER</strong> does not exist in our database.</p>
+                <p>You searched for: <em>BOOK_NAME_PLACEHOLDER</em></p>
                 <a href="/books">← Back to Books</a>
             </body>
             </html>
-            """
+            """.replace('BOOK_NAME_PLACEHOLDER', book_name)
             return render_template_string(error_html), 404

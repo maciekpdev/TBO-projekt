@@ -129,3 +129,10 @@ jobs:
             target: 'http://localhost:5000'
             token: ${{ secrets.GITHUB_TOKEN }}
             fail_action: false
+  
+        - name: Upload ZAP Report
+          if: always()
+          uses: actions/upload-artifact@v4
+          with:
+            name: zap-scan-report
+            path: report_html.html
