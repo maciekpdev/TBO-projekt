@@ -8,6 +8,6 @@ def test_valid_input():
         age=69
     )
 
-    assert customer.city == "Warszawa"
+    assert customer.city == "WrongCity"
     assert customer.name == "Important book"
     assert customer.age == 69
