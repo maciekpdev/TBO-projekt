@@ -1,6 +1,16 @@
 
 ZAD 1
 
+Stworzone przez na CI/CD korzysta z skanerów SCA: OWASP Dependency check, SAST: python: bandit, DAST: OWASP ZAP. 
+
+Flow CI/CD przebiega w podany sposób:
+
+1. Uruchamiane zostają równolegle bandit scan, dependency check oraz unit testy.
+2. Jeśli wszystkie z poprzednich jobów powiodą się tworzony jest docker image aplikacji, który wgrywany jest do GitHub Container Registry. Wersja z gałęzi main jest otagowana jako latest. Z innych jako beta.
+3. Wykonywany jest ostatni job OWASP ZAP.
+
+Joby generują raporty, które są dostępne do pobrania.
+
 ------DAST--------
 
 W celu zweryfikowania odporności aplikacji oraz skuteczności potoku CICD, wdrożono skaner dynamiczny OWASP ZAP w trybie Full Scan (Active Scan).
